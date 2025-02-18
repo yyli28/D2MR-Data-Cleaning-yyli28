@@ -274,7 +274,7 @@ library(tidyr)
 library(stringr)
 
 messy.midwest <- read_csv("messy-midwest.csv")
-clean.midwest <- read_csv("midwest.csv")
+midwest <- read_csv("midwest.csv")
 write_csv(midwest, "midwest.csv")
 
 all.equal(messy.midwest, midwest)
@@ -285,7 +285,7 @@ colnames(messy.midwest)
 
 library(dplyr)
 clean.midwest <- clean.midwest %>%
-  mutate(across(where(~ all(grepl("^-?\\d*\\.?\\d*$", ., perl = TRUE) | is.na(.))), as.numeric))
+  mutate(across(where(~ all(grepl("^-?\\d*\\.?\\d*$", ., perl = TRUE) | is.na(.))), as.numeric))%>%
 
   rename(
     county = `C0unty Name`,
@@ -293,18 +293,18 @@ clean.midwest <- clean.midwest %>%
     area = `Area (sq miles)`,
     poptotal = `Total P0pulation`,
     popdensity = `Population Density`,
-    #popwhite, popblack, popamerindian, popasian, popother, percblack, percamerindan, percother, 
     popadults = `Population Over 18`,
-    #perchsd, percprof, poppovertyknown, percpovertyknown,
     percollege = `Percentage College`,
     percbelowpoverty = `Percentage Below Poverty`,
     percasian = `Percentage Asian`,
-    #percchildbelowpovert, percadultpoverty, percelderlypoverty, inmetro, category
   )%>%
+  
   mutate(
     percwhite = (popwhite / poptotal) * 100, # Calculate percentage of white population
     percblack = (popblack / poptotal) * 100 # Calculate percentage of black population
-  )
+  )%>%
+  
+  select(PID, county, state, area, poptotal, popdensity, popwhite, popblack, popamerindian, popasian, popother, percwhite, percblack, percamerindan, percasian, percother, popadults, perchsd, percollege, percprof, poppovertyknown, percpovertyknown, percbelowpoverty, percchildbelowpovert, percadultpoverty, percelderlypoverty, inmetro, category)
   
 state_mappings <- c(
     "Wis." = "WI",
@@ -319,7 +319,6 @@ state_mappings <- c(
     "Ohio" = "OH"
   )
 
-# Clean county names
   clean1.midwest <- clean.midwest %>%
     mutate(
       county = str_trim(county),                         # Remove leading/trailing spaces

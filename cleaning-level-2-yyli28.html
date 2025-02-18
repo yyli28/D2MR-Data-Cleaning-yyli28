@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yangyue Li">
+<meta name="dcterms.date" content="2025-02-17">
+
+<title>Level 2 Data Cleaning: Clean the midwest Dataset</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="cleaning-level-2-yyli28_files/libs/clipboard/clipboard.min.js"></script>
+<script src="cleaning-level-2-yyli28_files/libs/quarto-html/quarto.js"></script>
+<script src="cleaning-level-2-yyli28_files/libs/quarto-html/popper.min.js"></script>
+<script src="cleaning-level-2-yyli28_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="cleaning-level-2-yyli28_files/libs/quarto-html/anchor.min.js"></script>
+<link href="cleaning-level-2-yyli28_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="cleaning-level-2-yyli28_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="cleaning-level-2-yyli28_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="cleaning-level-2-yyli28_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="cleaning-level-2-yyli28_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Level 2 Data Cleaning: Clean the midwest Dataset</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yangyue Li </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 17, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="objective" class="level1">
+<h1>Objective</h1>
+<p>The objective of this assignment is to practice cleaning and transforming a messy dataset using tidyverse functions. You will use skills like renaming and reordering columns, sorting rows, changing data types, mutating data, and using the stringr and forcats packages.</p>
+<p>This is the Level 2 Data Cleaning assignment. You may additionally or alternatively complete the <a href="https://github.com/nrdowling/d2mr-assessment/tree/main/01_data-cleaning/01_cleaning-level-1">Level 1 Data Cleaning assignment</a>, in which you will work with a simple dataset and focus on basic data cleaning tasks. The Level 1 assignment has more direct instruction and is recommended for those who are new to data cleaning.</p>
+<p>In this Level 2 Cleaning assignment, you will work with a more complex dataset and perform additional cleaning tasks with less direct instruction. The Level 2 assignment has more opportunities to demonstrating meeting course standards than this Level 1 assignment and is recommended for those who are already comfortable with the tasks in this assignment.</p>
+</section>
+<section id="instructions" class="level1">
+<h1>Instructions</h1>
+<ol type="1">
+<li>If you have not already done so, pull the latest changes from the <code>d2mr-assessment</code> repository to ensure you have the most up-to-date version of the assignment files. Confirm you are working in your fork of the repository.</li>
+<li>Open <code>cleaning-level-2.qmd</code> in RStudio and follow the instructions in the Setup section below to load and inspect the (original) <code>midwest</code> dataset.
+<ul>
+<li><strong>Important:</strong> Unlike Level 1, you will not be provided with a goal dataset to match. Instead, you will evaluate what cleaning tasks are necessary or useful <em>in principle</em>. You can reference the original <code>midwest</code> dataset, but ultimately you will need to decide what the “clean” version of the dataset should look like.</li>
+</ul></li>
+<li>Follow the guideline to identify and perform cleaning tasks on the <code>messy-midwest.csv</code> dataset.</li>
+<li>At some points in this document you may come across questions or non-coding exercises. Answer these questions in the text of this .qmd document, immediately below the question.</li>
+<li><em>Optional:</em> Continue to follow the instructions in the assignment script to clean the dataset above and beyond matching the original.</li>
+</ol>
+</section>
+<section id="setup" class="level1">
+<h1>Setup</h1>
+<p>Run these chunks as written. Do not make changes to code except where noted if necessary.</p>
+<section id="loading-libraries-and-set-seed" class="level2">
+<h2 class="anchored" data-anchor-id="loading-libraries-and-set-seed">Loading libraries and set seed</h2>
+</section>
+<section id="read-in-and-inspect-messy-data" class="level2">
+<h2 class="anchored" data-anchor-id="read-in-and-inspect-messy-data">Read in and inspect messy data</h2>
+<p>Read in and inspect the messy dataset <code>messy-midwest.csv</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: read-messy-data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">### LEAVE THIS CHUNK AS-IS </span><span class="al">###</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># You *might* need to edit the filepath, but don't change anything else!</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Read in messy-midwest.csv</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>messy.midwest <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">########################################</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"messy-midwest.csv"</span>, <span class="do">## &lt;-- THIS IS THE ONLY THING IN THIS CHUNK YOU CAN CHANGE IF NECESSARY</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="do">########################################</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">trim_ws =</span> <span class="cn">FALSE</span>, <span class="at">name_repair =</span> <span class="st">"minimal"</span>, <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>()))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the structure and contents of the messy midwest dataset with head(), glimpse(), str(), and/or View()</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 27
+  PID   `C0unty Name` State    `Area (sq miles)` `Total P0pulation`
+  &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt;             &lt;chr&gt;             
+1 3023  " 0conto"     Wis.     0.06              30226             
+2 1266  " 0ttawa "    Mich.    0.033             187768            
+3 1242  " 13nawee"    Michigan 0.043             91476             
+4 2051  " 1ak3"       OHIO     0.013             215499            
+5 3015  " 1incoln"    Wis.     0.053             26993             
+6 664   " a1len"      Ind.     0.041             300836            
+# ℹ 22 more variables: `Population Density` &lt;chr&gt;, popwhite &lt;chr&gt;,
+#   popblack &lt;chr&gt;, popamerindian &lt;chr&gt;, popasian &lt;chr&gt;, popother &lt;chr&gt;,
+#   percamerindan &lt;chr&gt;, `Percentage Asian` &lt;chr&gt;, percother &lt;chr&gt;,
+#   `Population Over 18` &lt;chr&gt;, perchsd &lt;chr&gt;, `Percentage College` &lt;chr&gt;,
+#   percprof &lt;chr&gt;, poppovertyknown &lt;chr&gt;, percpovertyknown &lt;chr&gt;,
+#   `Percentage Below Poverty` &lt;chr&gt;, percchildbelowpovert &lt;chr&gt;,
+#   percadultpoverty &lt;chr&gt;, percelderlypoverty &lt;chr&gt;, inmetro &lt;chr&gt;, …</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 437
+Columns: 27
+$ PID                        &lt;chr&gt; "3023", "1266", "1242", "2051", "3015", "66…
+$ `C0unty Name`              &lt;chr&gt; " 0conto", " 0ttawa ", " 13nawee", " 1ak3",…
+$ State                      &lt;chr&gt; "Wis.", "Mich.", "Michigan", "OHIO", "Wis."…
+$ `Area (sq miles)`          &lt;chr&gt; "0.06", "0.033", "0.043", "0.013", "0.053",…
+$ `Total P0pulation`         &lt;chr&gt; "30226", "187768", "91476", "215499", "2699…
+$ `Population Density`       &lt;chr&gt; "503.766667", "5689.93939", "2127.34884", "…
+$ popwhite                   &lt;chr&gt; "29926", "179675", "86323", "209879", "2671…
+$ popblack                   &lt;chr&gt; "18", "997", "1431", "3528", "84", "30314",…
+$ popamerindian              &lt;chr&gt; "212", "638", "303", "250", "96", "892", "1…
+$ popasian                   &lt;chr&gt; "36", "2451", "486", "1447", "78", "2644", …
+$ popother                   &lt;chr&gt; "34", "4007", "2933", "395", "23", "2900", …
+$ percamerindan              &lt;chr&gt; "0.70138292", "0.33978101", "0.33123442", "…
+$ `Percentage Asian`         &lt;chr&gt; "0.11910276", "1.30533424", "0.53128689", "…
+$ percother                  &lt;chr&gt; "0.11248594", "2.13401645", NA, "0.18329551…
+$ `Population Over 18`       &lt;chr&gt; "19760", "110737", "56323", "142348", "1756…
+$ perchsd                    &lt;chr&gt; "69.4078947", "79.7709889", "76.3258349", "…
+$ `Percentage College`       &lt;chr&gt; "13.4311741", "26.9656935", "18.7880617", "…
+$ percprof                   &lt;chr&gt; "2.37854251", "6.15963951", "4.58604833", "…
+$ poppovertyknown            &lt;chr&gt; "29750", "181937", "87535", "213036", "2627…
+$ percpovertyknown           &lt;chr&gt; "98.4251969", "96.894572", "95.6917661", "9…
+$ `Percentage Below Poverty` &lt;chr&gt; "12.0941176", "5.9866877", "10.4015537", "4…
+$ percchildbelowpovert       &lt;chr&gt; "14.1166317", "6.29788172", "13.9918186", "…
+$ percadultpoverty           &lt;chr&gt; "9.63442252", "5.89117375", "8.62787596", "…
+$ percelderlypoverty         &lt;chr&gt; "15.5886158", "5.68246591", "10.0333983", "…
+$ inmetro                    &lt;chr&gt; "0", "1", "1", "1", "0", "1", "0", "0", "0"…
+$ category                   &lt;chr&gt; "AAR", "ALU", "AAU", "HLU", "AAR", "HAU", "…
+$ `Population per Sq Mile`   &lt;chr&gt; "503766.666666667", "5689939.39393939", "21…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [437 × 27] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ PID                     : chr [1:437] "3023" "1266" "1242" "2051" ...
+ $ C0unty Name             : chr [1:437] " 0conto" " 0ttawa " " 13nawee" " 1ak3" ...
+ $ State                   : chr [1:437] "Wis." "Mich." "Michigan" "OHIO" ...
+ $ Area (sq miles)         : chr [1:437] "0.06" "0.033" "0.043" "0.013" ...
+ $ Total P0pulation        : chr [1:437] "30226" "187768" "91476" "215499" ...
+ $ Population Density      : chr [1:437] "503.766667" "5689.93939" "2127.34884" "16576.8462" ...
+ $ popwhite                : chr [1:437] "29926" "179675" "86323" "209879" ...
+ $ popblack                : chr [1:437] "18" "997" "1431" "3528" ...
+ $ popamerindian           : chr [1:437] "212" "638" "303" "250" ...
+ $ popasian                : chr [1:437] "36" "2451" "486" "1447" ...
+ $ popother                : chr [1:437] "34" "4007" "2933" "395" ...
+ $ percamerindan           : chr [1:437] "0.70138292" "0.33978101" "0.33123442" "0.11600982" ...
+ $ Percentage Asian        : chr [1:437] "0.11910276" "1.30533424" "0.53128689" "0.67146483" ...
+ $ percother               : chr [1:437] "0.11248594" "2.13401645" NA "0.18329551" ...
+ $ Population Over 18      : chr [1:437] "19760" "110737" "56323" "142348" ...
+ $ perchsd                 : chr [1:437] "69.4078947" "79.7709889" "76.3258349" "81.0520696" ...
+ $ Percentage College      : chr [1:437] "13.4311741" "26.9656935" "18.7880617" "23.6828055" ...
+ $ percprof                : chr [1:437] "2.37854251" "6.15963951" "4.58604833" "5.20274257" ...
+ $ poppovertyknown         : chr [1:437] "29750" "181937" "87535" "213036" ...
+ $ percpovertyknown        : chr [1:437] "98.4251969" "96.894572" "95.6917661" "98.8570713" ...
+ $ Percentage Below Poverty: chr [1:437] "12.0941176" "5.9866877" "10.4015537" "4.89729435" ...
+ $ percchildbelowpovert    : chr [1:437] "14.1166317" "6.29788172" "13.9918186" "7.14098582" ...
+ $ percadultpoverty        : chr [1:437] "9.63442252" "5.89117375" "8.62787596" "3.93348514" ...
+ $ percelderlypoverty      : chr [1:437] "15.5886158" "5.68246591" "10.0333983" "4.90623387" ...
+ $ inmetro                 : chr [1:437] "0" "1" "1" "1" ...
+ $ category                : chr [1:437] "AAR" "ALU" "AAU" "HLU" ...
+ $ Population per Sq Mile  : chr [1:437] "503766.666666667" "5689939.39393939" "2127348.8372093" "16576846.1538462" ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   .default = col_character(),
+  ..   PID = col_character(),
+  ..   `C0unty Name` = col_character(),
+  ..   State = col_character(),
+  ..   `Area (sq miles)` = col_character(),
+  ..   `Total P0pulation` = col_character(),
+  ..   `Population Density` = col_character(),
+  ..   popwhite = col_character(),
+  ..   popblack = col_character(),
+  ..   popamerindian = col_character(),
+  ..   popasian = col_character(),
+  ..   popother = col_character(),
+  ..   percamerindan = col_character(),
+  ..   `Percentage Asian` = col_character(),
+  ..   percother = col_character(),
+  ..   `Population Over 18` = col_character(),
+  ..   perchsd = col_character(),
+  ..   `Percentage College` = col_character(),
+  ..   percprof = col_character(),
+  ..   poppovertyknown = col_character(),
+  ..   percpovertyknown = col_character(),
+  ..   `Percentage Below Poverty` = col_character(),
+  ..   percchildbelowpovert = col_character(),
+  ..   percadultpoverty = col_character(),
+  ..   percelderlypoverty = col_character(),
+  ..   inmetro = col_character(),
+  ..   category = col_character(),
+  ..   `Population per Sq Mile` = col_character()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="inspect-the-original-midwest-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-the-original-midwest-dataset">Inspect the original midwest dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">### LEAVE THIS CHUNK AS-IS </span><span class="al">###</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the original midwest dataset</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(midwest)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># View the documentation for the midwest dataset</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>?midwest</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the structure and contents original midwest dataset with head(), glimpse(), str(), and/or View()</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 28
+    PID county   state  area poptotal popdensity popwhite popblack popamerindian
+  &lt;int&gt; &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;    &lt;int&gt;      &lt;dbl&gt;    &lt;int&gt;    &lt;int&gt;         &lt;int&gt;
+1   561 ADAMS    IL    0.052    66090      1271.    63917     1702            98
+2   562 ALEXAND… IL    0.014    10626       759      7054     3496            19
+3   563 BOND     IL    0.022    14991       681.    14477      429            35
+4   564 BOONE    IL    0.017    30806      1812.    29344      127            46
+5   565 BROWN    IL    0.018     5836       324.     5264      547            14
+6   566 BUREAU   IL    0.05     35688       714.    35157       50            65
+# ℹ 19 more variables: popasian &lt;int&gt;, popother &lt;int&gt;, percwhite &lt;dbl&gt;,
+#   percblack &lt;dbl&gt;, percamerindan &lt;dbl&gt;, percasian &lt;dbl&gt;, percother &lt;dbl&gt;,
+#   popadults &lt;int&gt;, perchsd &lt;dbl&gt;, percollege &lt;dbl&gt;, percprof &lt;dbl&gt;,
+#   poppovertyknown &lt;int&gt;, percpovertyknown &lt;dbl&gt;, percbelowpoverty &lt;dbl&gt;,
+#   percchildbelowpovert &lt;dbl&gt;, percadultpoverty &lt;dbl&gt;,
+#   percelderlypoverty &lt;dbl&gt;, inmetro &lt;int&gt;, category &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 437
+Columns: 28
+$ PID                  &lt;int&gt; 561, 562, 563, 564, 565, 566, 567, 568, 569, 570,…
+$ county               &lt;chr&gt; "ADAMS", "ALEXANDER", "BOND", "BOONE", "BROWN", "…
+$ state                &lt;chr&gt; "IL", "IL", "IL", "IL", "IL", "IL", "IL", "IL", "…
+$ area                 &lt;dbl&gt; 0.052, 0.014, 0.022, 0.017, 0.018, 0.050, 0.017, …
+$ poptotal             &lt;int&gt; 66090, 10626, 14991, 30806, 5836, 35688, 5322, 16…
+$ popdensity           &lt;dbl&gt; 1270.9615, 759.0000, 681.4091, 1812.1176, 324.222…
+$ popwhite             &lt;int&gt; 63917, 7054, 14477, 29344, 5264, 35157, 5298, 165…
+$ popblack             &lt;int&gt; 1702, 3496, 429, 127, 547, 50, 1, 111, 16, 16559,…
+$ popamerindian        &lt;int&gt; 98, 19, 35, 46, 14, 65, 8, 30, 8, 331, 51, 26, 17…
+$ popasian             &lt;int&gt; 249, 48, 16, 150, 5, 195, 15, 61, 23, 8033, 89, 3…
+$ popother             &lt;int&gt; 124, 9, 34, 1139, 6, 221, 0, 84, 6, 1596, 20, 7, …
+$ percwhite            &lt;dbl&gt; 96.71206, 66.38434, 96.57128, 95.25417, 90.19877,…
+$ percblack            &lt;dbl&gt; 2.57527614, 32.90043290, 2.86171703, 0.41225735, …
+$ percamerindan        &lt;dbl&gt; 0.14828264, 0.17880670, 0.23347342, 0.14932156, 0…
+$ percasian            &lt;dbl&gt; 0.37675897, 0.45172219, 0.10673071, 0.48691813, 0…
+$ percother            &lt;dbl&gt; 0.18762294, 0.08469791, 0.22680275, 3.69733169, 0…
+$ popadults            &lt;int&gt; 43298, 6724, 9669, 19272, 3979, 23444, 3583, 1132…
+$ perchsd              &lt;dbl&gt; 75.10740, 59.72635, 69.33499, 75.47219, 68.86152,…
+$ percollege           &lt;dbl&gt; 19.63139, 11.24331, 17.03382, 17.27895, 14.47600,…
+$ percprof             &lt;dbl&gt; 4.355859, 2.870315, 4.488572, 4.197800, 3.367680,…
+$ poppovertyknown      &lt;int&gt; 63628, 10529, 14235, 30337, 4815, 35107, 5241, 16…
+$ percpovertyknown     &lt;dbl&gt; 96.27478, 99.08714, 94.95697, 98.47757, 82.50514,…
+$ percbelowpoverty     &lt;dbl&gt; 13.151443, 32.244278, 12.068844, 7.209019, 13.520…
+$ percchildbelowpovert &lt;dbl&gt; 18.011717, 45.826514, 14.036061, 11.179536, 13.02…
+$ percadultpoverty     &lt;dbl&gt; 11.009776, 27.385647, 10.852090, 5.536013, 11.143…
+$ percelderlypoverty   &lt;dbl&gt; 12.443812, 25.228976, 12.697410, 6.217047, 19.200…
+$ inmetro              &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0…
+$ category             &lt;chr&gt; "AAR", "LHR", "AAR", "ALU", "AAR", "AAR", "LAR", …</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [437 × 28] (S3: tbl_df/tbl/data.frame)
+ $ PID                 : int [1:437] 561 562 563 564 565 566 567 568 569 570 ...
+ $ county              : chr [1:437] "ADAMS" "ALEXANDER" "BOND" "BOONE" ...
+ $ state               : chr [1:437] "IL" "IL" "IL" "IL" ...
+ $ area                : num [1:437] 0.052 0.014 0.022 0.017 0.018 0.05 0.017 0.027 0.024 0.058 ...
+ $ poptotal            : int [1:437] 66090 10626 14991 30806 5836 35688 5322 16805 13437 173025 ...
+ $ popdensity          : num [1:437] 1271 759 681 1812 324 ...
+ $ popwhite            : int [1:437] 63917 7054 14477 29344 5264 35157 5298 16519 13384 146506 ...
+ $ popblack            : int [1:437] 1702 3496 429 127 547 50 1 111 16 16559 ...
+ $ popamerindian       : int [1:437] 98 19 35 46 14 65 8 30 8 331 ...
+ $ popasian            : int [1:437] 249 48 16 150 5 195 15 61 23 8033 ...
+ $ popother            : int [1:437] 124 9 34 1139 6 221 0 84 6 1596 ...
+ $ percwhite           : num [1:437] 96.7 66.4 96.6 95.3 90.2 ...
+ $ percblack           : num [1:437] 2.575 32.9 2.862 0.412 9.373 ...
+ $ percamerindan       : num [1:437] 0.148 0.179 0.233 0.149 0.24 ...
+ $ percasian           : num [1:437] 0.3768 0.4517 0.1067 0.4869 0.0857 ...
+ $ percother           : num [1:437] 0.1876 0.0847 0.2268 3.6973 0.1028 ...
+ $ popadults           : int [1:437] 43298 6724 9669 19272 3979 23444 3583 11323 8825 95971 ...
+ $ perchsd             : num [1:437] 75.1 59.7 69.3 75.5 68.9 ...
+ $ percollege          : num [1:437] 19.6 11.2 17 17.3 14.5 ...
+ $ percprof            : num [1:437] 4.36 2.87 4.49 4.2 3.37 ...
+ $ poppovertyknown     : int [1:437] 63628 10529 14235 30337 4815 35107 5241 16455 13081 154934 ...
+ $ percpovertyknown    : num [1:437] 96.3 99.1 95 98.5 82.5 ...
+ $ percbelowpoverty    : num [1:437] 13.15 32.24 12.07 7.21 13.52 ...
+ $ percchildbelowpovert: num [1:437] 18 45.8 14 11.2 13 ...
+ $ percadultpoverty    : num [1:437] 11.01 27.39 10.85 5.54 11.14 ...
+ $ percelderlypoverty  : num [1:437] 12.44 25.23 12.7 6.22 19.2 ...
+ $ inmetro             : int [1:437] 0 0 0 1 0 0 0 0 0 1 ...
+ $ category            : chr [1:437] "AAR" "LHR" "AAR" "ALU" ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>QUESTIONS:</p>
+<ol type="1">
+<li>What are the differences between the messy dataset and the original midwest dataset?</li>
+</ol>
+<!-- answer below -->
+<ol type="a">
+<li>Column names are inconsistent</li>
+<li>Messy dataset has different column names and has typos</li>
+<li>Data types are incorrect</li>
+<li>Some numeric columns in the messy dataset are stored as character instead of numeric</li>
+<li>Inconsistent county and state formatting</li>
+<li>Some county names have numbers or special characters</li>
+</ol>
+<ol start="2" type="i">
+<li>State names are abbreviated inconsistently</li>
+</ol>
+<ol start="2" type="1">
+<li>What are the biggest issues you need to address in cleaning?</li>
+</ol>
+<!-- answer below -->
+<ol type="a">
+<li>Fix inconsistent column names</li>
+<li>Correct data types</li>
+<li>Standardize county and state names</li>
+</ol>
+<ol start="3" type="1">
+<li>Are there any differences between the messy dataset and the original dataset that you do not need or want to address in cleaning? If so, why (not)?</li>
+</ol>
+<!-- answer below -->
+<p>Maybe the few missing values? There are only few missing data, it’s not neccessary to get rid of them.</p>
+<ol start="4" type="1">
+<li>Are there additional cleaning tasks you would like to perform beyond matching the original dataset? If so, what are they and why do you think they are important?</li>
+</ol>
+<!-- answer below -->
+</section>
+</section>
+<section id="cleaning" class="level1">
+<h1>Cleaning</h1>
+<p>You may approach cleaning the dataset however you like based on how you identified problems above and how you think they should be prioritized.</p>
+<p>If you’re not sure where to start, you can organize your cleaning into the following categories. <strong>You do not need to follow this structure.</strong> Feel free to delete these sections, rearrange them, or add new ones as needed. (FYI: When I cleaned this myself I loosely followed this structure, but there were some parts of my approach that could not have worked in this order.)</p>
+<p>You can additionally/alternatively construct your cleaning in a single pipeline in the last chunk.</p>
+<section id="read-and-write-out-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="read-and-write-out-dataset">Read and write out dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>messy.midwest <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"messy-midwest.csv"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(midwest, <span class="st">"midwest.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="comparing-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-datasets">Comparing datasets</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare the messy and original datasets using all.equal()</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(messy.midwest, midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Names: 21 string mismatches"                                           
+ [2] "Attributes: &lt; Names: 1 string mismatch &gt;"                              
+ [3] "Attributes: &lt; Length mismatch: comparison on first 2 components &gt;"     
+ [4] "Attributes: &lt; Component \"class\": 3 string mismatches &gt;"              
+ [5] "Attributes: &lt; Component 2: target is externalptr, current is numeric &gt;"
+ [6] "Length mismatch: comparison on first 27 components"                    
+ [7] "Component \"PID\": Mean relative difference: 0.644657"                 
+ [8] "Component 2: 437 string mismatches"                                    
+ [9] "Component 3: 364 string mismatches"                                    
+[10] "Component 4: Mean relative difference: 0.4649267"                      
+[11] "Component 5: Mean relative difference: 1.360143"                       
+[12] "Component 6: Mean relative difference: 1.348816"                       
+[13] "Component \"popwhite\": Mean relative difference: 1.277251"            
+[14] "Component \"popblack\": Mean relative difference: 1.900388"            
+[15] "Component \"popamerindian\": Mean relative difference: 1.391976"       
+[16] "Component \"popasian\": Mean relative difference: 1.808017"            
+[17] "Component \"popother\": Mean relative difference: 1.891541"            
+[18] "Component 12: Mean relative difference: 118.607"                       
+[19] "Component 13: 'is.NA' value mismatch: 0 in current 39 in target"       
+[20] "Component 14: 'is.NA' value mismatch: 0 in current 29 in target"       
+[21] "Component 15: Mean relative difference: 0.999992"                      
+[22] "Component 16: Mean relative difference: 0.9935232"                     
+[23] "Component 17: Mean relative difference: 3335.808"                      
+[24] "Component 18: Mean relative difference: 15.63172"                      
+[25] "Component 19: Mean relative difference: 0.9998049"                     
+[26] "Component 20: Mean relative difference: 0.954204"                      
+[27] "Component 21: Mean relative difference: 7484.092"                      
+[28] "Component 22: Mean relative difference: 4.90427"                       
+[29] "Component 23: Mean relative difference: 0.50694"                       
+[30] "Component 24: Mean relative difference: 0.633034"                      
+[31] "Component 25: Mean relative difference: 30.8101"                       
+[32] "Component 26: Modes: character, numeric"                               
+[33] "Component 26: target is character, current is numeric"                 
+[34] "Component 27: Mean relative difference: 0.9999999"                     </code></pre>
+</div>
+</div>
+</section>
+<section id="creat-a-clean-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="creat-a-clean-dataset">Creat a clean dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataset to work with during the cleaning process called "clean.midwest"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> messy.midwest</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the names and order of columns in midwest:</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "PID"                  "county"               "state"               
+ [4] "area"                 "poptotal"             "popdensity"          
+ [7] "popwhite"             "popblack"             "popamerindian"       
+[10] "popasian"             "popother"             "percwhite"           
+[13] "percblack"            "percamerindan"        "percasian"           
+[16] "percother"            "popadults"            "perchsd"             
+[19] "percollege"           "percprof"             "poppovertyknown"     
+[22] "percpovertyknown"     "percbelowpoverty"     "percchildbelowpovert"
+[25] "percadultpoverty"     "percelderlypoverty"   "inmetro"             
+[28] "category"            </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the names and order of columns in messy.midwest:</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "PID"                      "C0unty Name"             
+ [3] "State"                    "Area (sq miles)"         
+ [5] "Total P0pulation"         "Population Density"      
+ [7] "popwhite"                 "popblack"                
+ [9] "popamerindian"            "popasian"                
+[11] "popother"                 "percamerindan"           
+[13] "Percentage Asian"         "percother"               
+[15] "Population Over 18"       "perchsd"                 
+[17] "Percentage College"       "percprof"                
+[19] "poppovertyknown"          "percpovertyknown"        
+[21] "Percentage Below Poverty" "percchildbelowpovert"    
+[23] "percadultpoverty"         "percelderlypoverty"      
+[25] "inmetro"                  "category"                
+[27] "Population per Sq Mile"  </code></pre>
+</div>
+</div>
+</section>
+<section id="change-data-types" class="level2">
+<h2 class="anchored" data-anchor-id="change-data-types">Change data types</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># change data types from character to numeric </span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">grepl</span>(<span class="st">"^-?</span><span class="sc">\\</span><span class="st">d*</span><span class="sc">\\</span><span class="st">.?</span><span class="sc">\\</span><span class="st">d*$"</span>, ., <span class="at">perl =</span> <span class="cn">TRUE</span>) <span class="sc">|</span> <span class="fu">is.na</span>(.))), as.numeric))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="rename-and-mutate-columns" class="level2">
+<h2 class="anchored" data-anchor-id="rename-and-mutate-columns">Rename and mutate columns</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename columns to match the original midwest dataset with rename()</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">county =</span> <span class="st">`</span><span class="at">C0unty Name</span><span class="st">`</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">state =</span> <span class="st">`</span><span class="at">State</span><span class="st">`</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">area =</span> <span class="st">`</span><span class="at">Area (sq miles)</span><span class="st">`</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">poptotal =</span> <span class="st">`</span><span class="at">Total P0pulation</span><span class="st">`</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">popdensity =</span> <span class="st">`</span><span class="at">Population Density</span><span class="st">`</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#popwhite, popblack, popamerindian, popasian, popother, percblack, percamerindan, percother, </span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">popadults =</span> <span class="st">`</span><span class="at">Population Over 18</span><span class="st">`</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">#perchsd, percprof, poppovertyknown, percpovertyknown,</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">percollege =</span> <span class="st">`</span><span class="at">Percentage College</span><span class="st">`</span>,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">percbelowpoverty =</span> <span class="st">`</span><span class="at">Percentage Below Poverty</span><span class="st">`</span>,</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">percasian =</span> <span class="st">`</span><span class="at">Percentage Asian</span><span class="st">`</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#percchildbelowpovert, percadultpoverty, percelderlypoverty, inmetro, category</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">percwhite =</span> (popwhite <span class="sc">/</span> poptotal) <span class="sc">*</span> <span class="dv">100</span>, <span class="co"># Calculate percentage of white population</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">percblack =</span> (popblack <span class="sc">/</span> poptotal) <span class="sc">*</span> <span class="dv">100</span> <span class="co"># Calculate percentage of black population</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reorder-columns" class="level2">
+<h2 class="anchored" data-anchor-id="reorder-columns">Reorder columns</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">select</span>(PID, county, state, area, poptotal, popdensity, popwhite, popblack, popamerindian, popasian, popother, percwhite, percblack, percamerindan, percasian, percother, popadults, perchsd, percollege, percprof, poppovertyknown, percpovertyknown, percbelowpoverty, percchildbelowpovert, percadultpoverty, percelderlypoverty, inmetro, category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="using-stringr-and-forcats" class="level2">
+<h2 class="anchored" data-anchor-id="using-stringr-and-forcats">Using stringr and forcats</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>state_mappings <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Wis."</span> <span class="ot">=</span> <span class="st">"WI"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Wisconsin"</span> <span class="ot">=</span> <span class="st">"WI"</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mich."</span> <span class="ot">=</span> <span class="st">"MI"</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Michigan"</span> <span class="ot">=</span> <span class="st">"MI"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ind."</span> <span class="ot">=</span> <span class="st">"IN"</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Indiana"</span> <span class="ot">=</span> <span class="st">"IN"</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ill."</span> <span class="ot">=</span> <span class="st">"IL"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Illinois"</span> <span class="ot">=</span> <span class="st">"IL"</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OHIO"</span> <span class="ot">=</span> <span class="st">"OH"</span>,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ohio"</span> <span class="ot">=</span> <span class="st">"OH"</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean county names</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  clean1.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_trim</span>(county),                         <span class="co"># Remove leading/trailing spaces</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"1"</span>, <span class="st">"l"</span>),        <span class="co"># Replace '1' with 'l'</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"0"</span>, <span class="st">"o"</span>),        <span class="co"># Replace '0' with 'o'</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">county  =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"3"</span>, <span class="st">"e"</span>),       <span class="co"># Replace '3' with 'e'</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_to_upper</span>(county),                 <span class="co"># Uppercase every letter </span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">state =</span> <span class="fu">ifelse</span>(state <span class="sc">%in%</span> <span class="fu">names</span>(state_mappings), </span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>                    state_mappings[state], </span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>                    state)</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">view</span>(clean1.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare clean1.midwest and midwest</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(clean1.midwest, midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Component \"PID\": Mean relative difference: 0.644657"                     
+ [2] "Component \"county\": 436 string mismatches"                               
+ [3] "Component \"state\": 348 string mismatches"                                
+ [4] "Component \"area\": Mean relative difference: 0.4649267"                   
+ [5] "Component \"poptotal\": Mean relative difference: 1.360143"                
+ [6] "Component \"popdensity\": Mean relative difference: 1.348816"              
+ [7] "Component \"popwhite\": Mean relative difference: 1.277251"                
+ [8] "Component \"popblack\": Mean relative difference: 1.900388"                
+ [9] "Component \"popamerindian\": Mean relative difference: 1.391976"           
+[10] "Component \"popasian\": Mean relative difference: 1.808017"                
+[11] "Component \"popother\": Mean relative difference: 1.891541"                
+[12] "Component \"percwhite\": Mean relative difference: 0.05361584"             
+[13] "Component \"percblack\": Mean relative difference: 1.443392"               
+[14] "Component \"percamerindan\": Mean relative difference: 1.461539"           
+[15] "Component \"percasian\": 'is.NA' value mismatch: 0 in current 39 in target"
+[16] "Component \"percother\": 'is.NA' value mismatch: 0 in current 29 in target"
+[17] "Component \"popadults\": Mean relative difference: 1.35594"                
+[18] "Component \"perchsd\": Mean relative difference: 0.08693209"               
+[19] "Component \"percollege\": Mean relative difference: 0.3512858"             
+[20] "Component \"percprof\": Mean relative difference: 0.4901817"               
+[21] "Component \"poppovertyknown\": Mean relative difference: 1.36329"          
+[22] "Component \"percpovertyknown\": Mean relative difference: 0.02512099"      
+[23] "Component \"percbelowpoverty\": Mean relative difference: 0.4243599"       
+[24] "Component \"percchildbelowpovert\": Mean relative difference: 0.4617856"   
+[25] "Component \"percadultpoverty\": Mean relative difference: 0.4833447"       
+[26] "Component \"percelderlypoverty\": Mean relative difference: 0.3434088"     
+[27] "Component \"inmetro\": Mean relative difference: 2"                        
+[28] "Component \"category\": 327 string mismatches"                             </code></pre>
+</div>
+</div>
+</section>
+<section id="other-cleaning-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="other-cleaning-tasks">Other cleaning tasks</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#c Sort data by PID</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>clean1.midwest <span class="ot">&lt;-</span> clean1.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(PID)<span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(<span class="st">"county_state"</span>, county, state, <span class="at">sep =</span> <span class="st">", "</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">view</span>(clean1.midwest)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(clean1.midwest, midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Names: 27 string mismatches"                                    
+ [2] "Length mismatch: comparison on first 28 components"             
+ [3] "Component 2: 437 string mismatches"                             
+ [4] "Component 3: 437 string mismatches"                             
+ [5] "Component 4: Modes: character, numeric"                         
+ [6] "Component 4: target is character, current is numeric"           
+ [7] "Component 5: Mean relative difference: 2898167"                 
+ [8] "Component 6: Mean relative difference: 0.9677756"               
+ [9] "Component 7: Mean relative difference: 25.41921"                
+[10] "Component 8: Mean relative difference: 0.8652995"               
+[11] "Component 9: Mean relative difference: 0.9839673"               
+[12] "Component 10: Mean relative difference: 3.320269"               
+[13] "Component 11: Mean relative difference: 0.8603085"              
+[14] "Component 12: Mean relative difference: 0.9872655"              
+[15] "Component 13: Mean relative difference: 0.9719929"              
+[16] "Component 14: Mean relative difference: 1.124954"               
+[17] "Component 15: Mean relative difference: 1.078204"               
+[18] "Component 16: 'is.NA' value mismatch: 0 in current 39 in target"
+[19] "Component 17: 'is.NA' value mismatch: 0 in current 29 in target"
+[20] "Component 18: Mean relative difference: 0.9987869"              
+[21] "Component 19: Mean relative difference: 0.7529561"              
+[22] "Component 20: Mean relative difference: 0.7566178"              
+[23] "Component 21: Mean relative difference: 21055.18"               
+[24] "Component 22: Mean relative difference: 0.998963"               
+[25] "Component 23: Mean relative difference: 0.8711722"              
+[26] "Component 24: Mean relative difference: 0.3286011"              
+[27] "Component 25: Mean relative difference: 0.3573378"              
+[28] "Component 26: Mean relative difference: 0.257114"               
+[29] "Component 27: Mean relative difference: 0.9698614"              
+[30] "Component 28: Modes: numeric, character"                        
+[31] "Component 28: target is numeric, current is character"          </code></pre>
+</div>
+</div>
+</section>
+<section id="all-cleaning-in-a-single-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="all-cleaning-in-a-single-pipeline">All cleaning in a single pipeline</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: one-pipeline</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>messy.midwest <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"messy-midwest.csv"</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"midwest.csv"</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(midwest, <span class="st">"midwest.csv"</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(messy.midwest, midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Names: 21 string mismatches"                                           
+ [2] "Attributes: &lt; Names: 1 string mismatch &gt;"                              
+ [3] "Attributes: &lt; Length mismatch: comparison on first 2 components &gt;"     
+ [4] "Attributes: &lt; Component \"class\": 3 string mismatches &gt;"              
+ [5] "Attributes: &lt; Component 2: target is externalptr, current is numeric &gt;"
+ [6] "Length mismatch: comparison on first 27 components"                    
+ [7] "Component \"PID\": Mean relative difference: 0.644657"                 
+ [8] "Component 2: 437 string mismatches"                                    
+ [9] "Component 3: 364 string mismatches"                                    
+[10] "Component 4: Mean relative difference: 0.4649267"                      
+[11] "Component 5: Mean relative difference: 1.360143"                       
+[12] "Component 6: Mean relative difference: 1.348816"                       
+[13] "Component \"popwhite\": Mean relative difference: 1.277251"            
+[14] "Component \"popblack\": Mean relative difference: 1.900388"            
+[15] "Component \"popamerindian\": Mean relative difference: 1.391976"       
+[16] "Component \"popasian\": Mean relative difference: 1.808017"            
+[17] "Component \"popother\": Mean relative difference: 1.891541"            
+[18] "Component 12: Mean relative difference: 118.607"                       
+[19] "Component 13: 'is.NA' value mismatch: 0 in current 39 in target"       
+[20] "Component 14: 'is.NA' value mismatch: 0 in current 29 in target"       
+[21] "Component 15: Mean relative difference: 0.999992"                      
+[22] "Component 16: Mean relative difference: 0.9935232"                     
+[23] "Component 17: Mean relative difference: 3335.808"                      
+[24] "Component 18: Mean relative difference: 15.63172"                      
+[25] "Component 19: Mean relative difference: 0.9998049"                     
+[26] "Component 20: Mean relative difference: 0.954204"                      
+[27] "Component 21: Mean relative difference: 7484.092"                      
+[28] "Component 22: Mean relative difference: 4.90427"                       
+[29] "Component 23: Mean relative difference: 0.50694"                       
+[30] "Component 24: Mean relative difference: 0.633034"                      
+[31] "Component 25: Mean relative difference: 30.8101"                       
+[32] "Component 26: Modes: character, numeric"                               
+[33] "Component 26: target is character, current is numeric"                 
+[34] "Component 27: Mean relative difference: 0.9999999"                     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> messy.midwest</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "PID"                  "county"               "state"               
+ [4] "area"                 "poptotal"             "popdensity"          
+ [7] "popwhite"             "popblack"             "popamerindian"       
+[10] "popasian"             "popother"             "percwhite"           
+[13] "percblack"            "percamerindan"        "percasian"           
+[16] "percother"            "popadults"            "perchsd"             
+[19] "percollege"           "percprof"             "poppovertyknown"     
+[22] "percpovertyknown"     "percbelowpoverty"     "percchildbelowpovert"
+[25] "percadultpoverty"     "percelderlypoverty"   "inmetro"             
+[28] "category"            </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(messy.midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "PID"                      "C0unty Name"             
+ [3] "State"                    "Area (sq miles)"         
+ [5] "Total P0pulation"         "Population Density"      
+ [7] "popwhite"                 "popblack"                
+ [9] "popamerindian"            "popasian"                
+[11] "popother"                 "percamerindan"           
+[13] "Percentage Asian"         "percother"               
+[15] "Population Over 18"       "perchsd"                 
+[17] "Percentage College"       "percprof"                
+[19] "poppovertyknown"          "percpovertyknown"        
+[21] "Percentage Below Poverty" "percchildbelowpovert"    
+[23] "percadultpoverty"         "percelderlypoverty"      
+[25] "inmetro"                  "category"                
+[27] "Population per Sq Mile"  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>clean.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">grepl</span>(<span class="st">"^-?</span><span class="sc">\\</span><span class="st">d*</span><span class="sc">\\</span><span class="st">.?</span><span class="sc">\\</span><span class="st">d*$"</span>, ., <span class="at">perl =</span> <span class="cn">TRUE</span>) <span class="sc">|</span> <span class="fu">is.na</span>(.))), as.numeric))<span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">county =</span> <span class="st">`</span><span class="at">C0unty Name</span><span class="st">`</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">state =</span> <span class="st">`</span><span class="at">State</span><span class="st">`</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">area =</span> <span class="st">`</span><span class="at">Area (sq miles)</span><span class="st">`</span>,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">poptotal =</span> <span class="st">`</span><span class="at">Total P0pulation</span><span class="st">`</span>,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">popdensity =</span> <span class="st">`</span><span class="at">Population Density</span><span class="st">`</span>,</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">#popwhite, popblack, popamerindian, popasian, popother, percblack, percamerindan, percother, </span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">popadults =</span> <span class="st">`</span><span class="at">Population Over 18</span><span class="st">`</span>,</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#perchsd, percprof, poppovertyknown, percpovertyknown,</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">percollege =</span> <span class="st">`</span><span class="at">Percentage College</span><span class="st">`</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">percbelowpoverty =</span> <span class="st">`</span><span class="at">Percentage Below Poverty</span><span class="st">`</span>,</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">percasian =</span> <span class="st">`</span><span class="at">Percentage Asian</span><span class="st">`</span>,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#percchildbelowpovert, percadultpoverty, percelderlypoverty, inmetro, category</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">percwhite =</span> (popwhite <span class="sc">/</span> poptotal) <span class="sc">*</span> <span class="dv">100</span>, <span class="co"># Calculate percentage of white population</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">percblack =</span> (popblack <span class="sc">/</span> poptotal) <span class="sc">*</span> <span class="dv">100</span> <span class="co"># Calculate percentage of black population</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>state_mappings <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Wis."</span> <span class="ot">=</span> <span class="st">"WI"</span>,</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Wisconsin"</span> <span class="ot">=</span> <span class="st">"WI"</span>,</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mich."</span> <span class="ot">=</span> <span class="st">"MI"</span>,</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Michigan"</span> <span class="ot">=</span> <span class="st">"MI"</span>,</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ind."</span> <span class="ot">=</span> <span class="st">"IN"</span>,</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Indiana"</span> <span class="ot">=</span> <span class="st">"IN"</span>,</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ill."</span> <span class="ot">=</span> <span class="st">"IL"</span>,</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Illinois"</span> <span class="ot">=</span> <span class="st">"IL"</span>,</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OHIO"</span> <span class="ot">=</span> <span class="st">"OH"</span>,</span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ohio"</span> <span class="ot">=</span> <span class="st">"OH"</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean county names</span></span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>  clean1.midwest <span class="ot">&lt;-</span> clean.midwest <span class="sc">%&gt;%</span></span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_trim</span>(county),                         <span class="co"># Remove leading/trailing spaces</span></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"1"</span>, <span class="st">"l"</span>),        <span class="co"># Replace '1' with 'l'</span></span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"0"</span>, <span class="st">"o"</span>),        <span class="co"># Replace '0' with 'o'</span></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">county  =</span> <span class="fu">str_replace_all</span>(county, <span class="st">"3"</span>, <span class="st">"e"</span>),       <span class="co"># Replace '3' with 'e'</span></span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">county =</span> <span class="fu">str_to_upper</span>(county),                 <span class="co"># Uppercase every letter </span></span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">state =</span> <span class="fu">ifelse</span>(state <span class="sc">%in%</span> <span class="fu">names</span>(state_mappings), </span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>                    state_mappings[state], </span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>                    state)</span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">%&gt;%</span></span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(PID)<span class="sc">%&gt;%</span></span>
+<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unite</span>(<span class="st">"county_state"</span>, county, state, <span class="at">sep =</span> <span class="st">", "</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(clean1.midwest, midwest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Names: 27 string mismatches"                                    
+ [2] "Length mismatch: comparison on first 28 components"             
+ [3] "Component 2: 437 string mismatches"                             
+ [4] "Component 3: 437 string mismatches"                             
+ [5] "Component 4: Modes: character, numeric"                         
+ [6] "Component 4: target is character, current is numeric"           
+ [7] "Component 5: Mean relative difference: 2898167"                 
+ [8] "Component 6: Mean relative difference: 0.9677756"               
+ [9] "Component 7: Mean relative difference: 25.41921"                
+[10] "Component 8: Mean relative difference: 0.8652995"               
+[11] "Component 9: Mean relative difference: 0.9839673"               
+[12] "Component 10: Mean relative difference: 3.320269"               
+[13] "Component 11: Mean relative difference: 0.8603085"              
+[14] "Component 12: Mean relative difference: 0.9872655"              
+[15] "Component 13: Mean relative difference: 3.772385"               
+[16] "Component 14: 'is.NA' value mismatch: 0 in current 39 in target"
+[17] "Component 15: 'is.NA' value mismatch: 0 in current 29 in target"
+[18] "Component 16: Mean relative difference: 0.9999921"              
+[19] "Component 17: Mean relative difference: 823.338"                
+[20] "Component 18: Mean relative difference: 3.047864"               
+[21] "Component 19: Mean relative difference: 3.108764"               
+[22] "Component 20: Mean relative difference: 0.9999525"              
+[23] "Component 21: Mean relative difference: 963.2882"               
+[24] "Component 22: Mean relative difference: 6.762298"               
+[25] "Component 23: Mean relative difference: 0.2499453"              
+[26] "Component 24: Mean relative difference: 0.5382736"              
+[27] "Component 25: Mean relative difference: 0.2464979"              
+[28] "Component 26: Mean relative difference: 32.18008"               
+[29] "Component 27: Modes: character, numeric"                        
+[30] "Component 27: target is character, current is numeric"          
+[31] "Component 28: Modes: numeric, character"                        
+[32] "Component 28: target is numeric, current is character"          </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(clean1.midwest, <span class="st">"final-clean-midwest.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="reflection" class="level1">
+<h1>Reflection</h1>
+<p>QUESTIONS:</p>
+<ol type="1">
+<li>Is your dataset identical to <code>midwest</code>? If not, what is different? (Remember the functions <code>all.equal()</code> and <code>diff_data()</code> can help here.)</li>
+</ol>
+<!-- answer below -->
+<p>Not exactly identical. a. There is one string mismatch in the column ‘county’. b. There are a few missing data. c.&nbsp;I added a new column ‘county_state’</p>
+<ol start="2" type="1">
+<li>Did you make any choices to clean the data that resulted in the dataset not matching the original? Why did you make those choices?</li>
+</ol>
+<!-- answer below -->
+<p>I used the unite() to create a new column named ‘county_state’. - Some counties have the same name across multiple states. For example, Franklin County exists in OH, IN, and IL. - For better visualizing: when creating charts or reports, county_state provides a clearer label.</p>
+<ol start="3" type="1">
+<li>Were there any cleaning steps – whether necessary to recreate the original df or just because you wanted to do them – that you weren’t able to implement? If so, what were they and what more would you need to do/know to implement them?</li>
+</ol>
+<!-- answer below -->
+</section>
+<section id="unguided-cleaning-and-transformation" class="level1">
+<h1>Unguided cleaning and transformation</h1>
+<p><em>Optional:</em> If you have the time and interest, continue transforming this dataset as you please. Create new columns based on the existing ones, reformat strings, try your hand at a regex replacement, summarize by groups (factor levels), visualize a simple relationship, or anything else you can think of. To get you started, consider things like:</p>
+<ol type="1">
+<li><strong>Exploratory Data Analysis:</strong> Use the cleaned dataset to explore relationships between variables, create visualizations, and generate insights.</li>
+<li><strong>Data Transformation:</strong> Create new variables, aggregate data, or reshape the dataset to prepare it for analysis.</li>
+<li><strong>Split, Merge, and Reshape:</strong> Split the dataset into multiple datasets or merge it with other datasets using <code>join</code> functions to create a new dataset. Use <code>pivot_longer()</code> and <code>pivot_wider()</code> to reshape the data.</li>
+<li><strong>Informativity:</strong> Consider the midwest data and its documentation. Clean/transform the dataframe into a format that is more informative, transparent, or easier to work with. For example, improve column naming conventions, create new (useful) variables, reduce redundancy, or eliminate variables that are not useful or documented.</li>
+</ol>
+</section>
+<section id="submission-assessment" class="level1">
+<h1>Submission &amp; Assessment</h1>
+<p>To submit:</p>
+<ol type="1">
+<li>Add an <code>assessment.md</code> file to this mini-project’s directory:
+<ol type="1">
+<li>Check off all objectives you believe you have demonstrated</li>
+<li>Indicate which unique objectives you are meeting for the first time (if any)</li>
+<li>Complete any relevant open-ended items</li>
+</ol></li>
+<li>Push your changes to your centralized assignment repository on GitHub.</li>
+<li>Confirm that Dr.&nbsp;Dowling and your section TA are added as collaborators to your repository.</li>
+<li>Submit your work in your next open mini-project assignment by including the following information in the text box:
+<ol type="1">
+<li>The title of the assignment: “Level 2 Data Cleaning: Clean the midwest Dataset”</li>
+<li>A link to the <strong>directory</strong> for this assignment in your centralized assignment repo</li>
+</ol></li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

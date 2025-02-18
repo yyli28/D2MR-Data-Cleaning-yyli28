@@ -480,6 +480,8 @@ If you believe you have demonstrated any of the above skills sufficiently to cou
 
 <!-- Explanation of demonstrated unassessed objectives below this line -->
 
+I used use frequent, informative comments in code and markdown.
+
 <!-- Explanation of demonstrated unassessed objectives above this line -->
 
 ### Off-the-syllabus skills evaluation
