@@ -1,3 +1,12 @@
+# Ignore compiled documents
+*.pdf
+*.docx
+*.html
+
+# Ignore datasets and large files
+*.csv
+
+
 # History files
 .Rhistory
 .Rapp.history
