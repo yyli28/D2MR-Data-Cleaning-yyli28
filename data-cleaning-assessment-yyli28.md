@@ -21,7 +21,7 @@ Mini-project title: Data cleaning level2
 
 Submission date: 2/17
 
-Project GitHub subdirectory URL:
+Project GitHub subdirectory URL: <https://github.com/yyli28/D2MR-Data-Cleaning-yyli28.git>
 
 URL or instructions to access additional materials, if needed:
 
