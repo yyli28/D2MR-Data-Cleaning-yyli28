@@ -500,6 +500,8 @@ Thoughtful reflections may earn engagement points.
 
 <!-- Reflection below this line -->
 
+This project provided a valuable hands-on experience in data cleaning. One of the biggest challenges in this assignment was the debugging process. Multiple unexpected issues arose that required careful troubleshooting. I did not realize I need to convert data type first until I failed computing the two missing columns. Then, data type conversion errors occurred when trying to mutate columns into numeric values. I tried many time to achieve that and for some reasons some approaches that work previously did not work, so it was a bit frustrating. If I were to approach this project again, I might focus on improving my workflow automation by writing reusable functions for data cleaning. Additionally, I might generate a new CSV file at each step of the cleaning process, ensuring that I can always revert to the previous version if needed.
+
 <!-- Do not edit below this line. -->
 
 ## Grader feedback
